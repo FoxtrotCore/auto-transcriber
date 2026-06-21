@@ -6,7 +6,7 @@ from whisperx.SubtitlesProcessor import SubtitlesProcessor
 from . import APP_DESCRIPTION, APP_NAME
 from .extract_audio import extract_audio_from_video
 from .subtitle import build_ass_subtitle
-from .transcribe import dump_raw_transcript, transcribe
+from .transcribe import transcribe
 from .utils import get_logger
 
 
@@ -30,7 +30,7 @@ def build_parser() -> ArgumentParser:
         "--device",
         "-d",
         default="cpu",
-        choices=["cpu", "cuda", "rocm"],
+        choices=["cpu", "cuda"],
         help="Device type to use for PyTorch inference. (Default: %(default)s)",
     )
     parser.add_argument(

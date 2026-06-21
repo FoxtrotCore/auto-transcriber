@@ -1,4 +1,4 @@
-# Audio Transcriber
+# FTF Auto Transcriber
 
 Workflow automation to auto-extract, pre-process, transcribe, post-process, diatirize and format subtitles for any given video file.
 
@@ -6,8 +6,8 @@ Workflow automation to auto-extract, pre-process, transcribe, post-process, diat
 
 ## Install
 
-`$` `pip install -e .[dev]`
+`$` `pip install -e .[dev,rocm]`
 
 ## Usage
 
-`$` `ftf-audio-transcriber`
+`$` `ftf-auto-transcriber --help`

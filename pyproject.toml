@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "black", "isort", "ipdb"]
+dev = ["ruff==0.15.18", "ipdb==0.13.13"]
 rocm = ["pytorch-rocm-gtt==0.1.4"]
 
 [project.scripts]
