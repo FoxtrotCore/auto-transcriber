@@ -1,7 +1,7 @@
 from json import dump, load
 from pathlib import Path
 
-from whisperx import load_audio, load_model, assign_word_speakers
+from whisperx import assign_word_speakers, load_audio, load_model
 from whisperx.SubtitlesProcessor import SubtitlesProcessor
 
 from . import APP_NAME
@@ -40,7 +40,6 @@ def transcribe(
                 max_line_length=80,
                 min_char_length_splitter=32,
             )
-
 
     # Load audio file
     audio = load_audio(audio_path)

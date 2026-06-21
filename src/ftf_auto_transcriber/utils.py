@@ -1,21 +1,21 @@
-from pathlib import Path
 from datetime import datetime as dt
 from logging import (
     DEBUG,
     INFO,
+    FileHandler,
     Formatter,
     Logger,
     StreamHandler,
-    FileHandler,
     basicConfig,
     getLogger,
 )
+from pathlib import Path
 
 from . import APP_NAME
 
 
 def get_logger(log_name: str = APP_NAME, verbose: bool = False) -> Logger:
-    now = dt.now().isoformat().replace(':', '-').replace('T', '_').split('.')[0]
+    now = dt.now().isoformat().replace(":", "-").replace("T", "_").split(".")[0]
     logger = getLogger(log_name)
 
     if getattr(logger, "_configured", False):
@@ -28,7 +28,7 @@ def get_logger(log_name: str = APP_NAME, verbose: bool = False) -> Logger:
     stream_handler = StreamHandler()
     stream_handler.setLevel(log_level)
 
-    file_handler = FileHandler(Path(f'./{now}-ftf-auto-transcriber.log').absolute())
+    file_handler = FileHandler(Path(f"./{now}-ftf-auto-transcriber.log").absolute())
     file_handler.setLevel(log_level)
 
     formatter = Formatter(fmt="%(asctime)s %(levelname)s [%(name)s] %(message)s")

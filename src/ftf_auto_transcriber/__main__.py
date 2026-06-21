@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+
 from whisperx.SubtitlesProcessor import SubtitlesProcessor
 
 from . import APP_DESCRIPTION, APP_NAME
