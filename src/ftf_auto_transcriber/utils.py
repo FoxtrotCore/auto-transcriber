@@ -29,10 +29,13 @@ def get_logger(log_name: str = APP_NAME, verbose: bool = False) -> Logger:
     stream_handler.setLevel(log_level)
 
     file_handler = FileHandler(Path(f'./{now}-ftf-auto-transcriber.log').absolute())
+    file_handler.setLevel(log_level)
 
     formatter = Formatter(fmt="%(asctime)s %(levelname)s [%(name)s] %(message)s")
     stream_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
 
     logger.addHandler(stream_handler)
+    logger.addHandler(file_handler)
     logger._configured = True
     return logger
