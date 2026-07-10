@@ -3,9 +3,7 @@ from typing import Optional
 
 from ffmpeg.ffmpeg import export
 from ffmpeg.inputs import VideoFile
-from ffmpeg.output import OutFile
 
-from . import APP_NAME
 from .utils import get_logger
 
 

@@ -147,7 +147,7 @@ def main():
     audio_path: Path = extract_audio_from_video(video_path, audio_dir)
 
     # Transcribe the audio and save the raw transcription
-    transcript: list[dict] = transcribe(
+    transcript: dict = transcribe(
         audio_path=audio_path,
         transcript_dir=transcript_dir,
         device=args.device,
@@ -162,7 +162,8 @@ def main():
     )
 
     # Format and save the transcript into ASS
-    subtitle_path: Path = build_ass_subtitle(audio_path, transcript)
+    subtitle_path: Path = build_ass_subtitle(audio_path, transcript, transcript_dir)
+    LOG.info(f"Saved formatted ASS subtitle to: {subtitle_path}")
 
 
 if __name__ == "__main__":

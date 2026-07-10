@@ -6,7 +6,6 @@ from logging import (
     Formatter,
     Logger,
     StreamHandler,
-    basicConfig,
     getLogger,
 )
 from pathlib import Path

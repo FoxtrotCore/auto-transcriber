@@ -9,7 +9,6 @@ from whisperx import (
     load_model,
 )
 from whisperx.diarize import DiarizationPipeline
-from whisperx.SubtitlesProcessor import SubtitlesProcessor
 
 from .utils import get_logger
 
@@ -50,7 +49,7 @@ def transcribe(
     min_speakers: int,
     max_speakers: int,
     hugging_face_api_token: str,
-) -> list[dict]:
+) -> dict:
     LOG = get_logger()
 
     # Build transcript name
@@ -64,13 +63,7 @@ def transcribe(
             transcript_path.absolute(),
         )
         with open(transcript_path.absolute(), "r") as file:
-            raw_transcript: dict = load(file)
-            return SubtitlesProcessor(
-                segments=raw_transcript.get("segments"),
-                lang=language,
-                max_line_length=80,
-                min_char_length_splitter=32,
-            )
+            return load(file)
 
     # Load audio file
     audio = load_audio(audio_path)
@@ -113,4 +106,17 @@ def transcribe(
         audio, min_speakers=min_speakers, max_speakers=max_speakers
     )
 
-    return assign_word_speakers(diarized_transcript, aligned_transcript)
+    # Determine speakers and save final result to disk
+    transcript: dict = assign_word_speakers(diarized_transcript, aligned_transcript)
+    with open(transcript_path.absolute(), "w+") as file:
+        dump(
+            transcript,
+            file,
+            ensure_ascii=True,
+            allow_nan=False,
+            check_circular=True,
+            indent=4,
+            sort_keys=True,
+        )
+
+    return transcript
