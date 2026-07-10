@@ -1,28 +1,25 @@
+from json import dump
 from pathlib import Path
 
-from ass import Dialogue, Document, EventsSection
-from whisperx.SubtitlesProcessor import SubtitlesProcessor
+from ass import Dialogue, Document
 
 from .utils import get_logger
 
 
-def build_ass_subtitle(transcript_path: Path, transcript: SubtitlesProcessor) -> Path:
+def build_ass_subtitle(audio_path: Path, transcript: list[dict]) -> Path:
     LOG = get_logger()
 
     # Build subtitle name
-    subtitle_name = f'{transcript_path.name.split(".")[0]}.ass'
-    srt_name = f'{transcript_path.name.split(".")[0]}.srt'
-    subtitle_path = transcript_path.parent.joinpath(subtitle_name)
-    transcript.save(filename=srt_name)
+    subtitle_name = f"{audio_path.name.split('.')[0]}.ass"
+    json_name = f"{audio_path.name.split('.')[0]}.json"
+    subtitle_path = audio_path.parent.joinpath(subtitle_name)
+    with open(json_name, "w+") as file:
+        dump(transcript, file)
 
     # Construct the formatted subtitle
     subtitle = Document()
-    from ipdb import set_trace
 
-    set_trace()
-
-    return
-    for segment in raw_transcript.get("segments"):
+    for segment in transcript:
         line = Dialogue(
             layer=0,
             start=int(segment.get("start")),
@@ -36,8 +33,6 @@ def build_ass_subtitle(transcript_path: Path, transcript: SubtitlesProcessor) ->
             text=segment.get("text"),
         )
         subtitle.events.append(line)
-    intro_music = Sound(start=0, end=10, text="Intro Theme Song!", name="intro-music")
-    subtitle.events.append(intro_music)
 
     # Write to file
     with open(subtitle_path, "w+") as file:

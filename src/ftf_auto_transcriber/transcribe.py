@@ -1,7 +1,14 @@
 from json import dump, load
 from pathlib import Path
 
-from whisperx import assign_word_speakers, load_audio, load_model
+from whisperx import (
+    align,
+    assign_word_speakers,
+    load_align_model,
+    load_audio,
+    load_model,
+)
+from whisperx.diarize import DiarizationPipeline
 from whisperx.SubtitlesProcessor import SubtitlesProcessor
 
 from .utils import get_logger
@@ -42,7 +49,8 @@ def transcribe(
     diarize: bool,
     min_speakers: int,
     max_speakers: int,
-) -> SubtitlesProcessor:
+    hugging_face_api_token: str,
+) -> list[dict]:
     LOG = get_logger()
 
     # Build transcript name
@@ -73,6 +81,7 @@ def transcribe(
         model, device=device, compute_type=compute_type, language=language
     )
 
+    # Transcribe raw segments
     LOG.debug(
         "Transcribing %s with params: (device: %s, model: %s, language: %s, batch size: %s, compute type: %s, diarize: %s)",
         audio_path,
@@ -83,11 +92,25 @@ def transcribe(
         compute_type,
         diarize,
     )
-    raw_transcript: dict = asr_model.transcribe(audio, language=language)
+    raw_transcript: dict = asr_model.transcribe(audio, batch_size=batch_size)
 
-    return SubtitlesProcessor(
-        segments=raw_transcript.get("segments"),
-        lang=language,
-        max_line_length=80,
-        min_char_length_splitter=32,
+    # Align segments
+    alignment_model, metadata = load_align_model(
+        language_code=raw_transcript.get("language"), device=device
     )
+    aligned_transcript = align(
+        raw_transcript.get("segments"),
+        alignment_model,
+        metadata,
+        audio,
+        device,
+        return_char_alignments=False,
+    )
+
+    # Diarize segments
+    diarization_model = DiarizationPipeline(token=hugging_face_api_token, device=device)
+    diarized_transcript = diarization_model(
+        audio, min_speakers=min_speakers, max_speakers=max_speakers
+    )
+
+    return assign_word_speakers(diarized_transcript, aligned_transcript)

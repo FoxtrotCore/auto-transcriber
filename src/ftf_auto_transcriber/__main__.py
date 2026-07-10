@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
+from os import getenv
 from pathlib import Path
-
-from whisperx.SubtitlesProcessor import SubtitlesProcessor
 
 from . import APP_DESCRIPTION, APP_NAME
 from .extract_audio import extract_audio_from_video
@@ -101,6 +100,13 @@ def build_parser() -> ArgumentParser:
         help="Maximum number of speakers to in audio file. (Default: %(default)s)",
     )
     parser.add_argument(
+        "--hugging-face-api-token",
+        "-H",
+        type=str,
+        default=getenv("HUGGING_FACE_TOKEN"),
+        help="Hugging Face API Token. (Default: %(default)s)",
+    )
+    parser.add_argument(
         "--verbose",
         "-v",
         action="store_true",
@@ -141,7 +147,7 @@ def main():
     audio_path: Path = extract_audio_from_video(video_path, audio_dir)
 
     # Transcribe the audio and save the raw transcription
-    raw_transcript: SubtitlesProcessor = transcribe(
+    transcript: list[dict] = transcribe(
         audio_path=audio_path,
         transcript_dir=transcript_dir,
         device=args.device,
@@ -152,10 +158,11 @@ def main():
         diarize=args.diarize,
         min_speakers=args.min_speakers,
         max_speakers=args.max_speakers,
+        hugging_face_api_token=args.hugging_face_api_token,
     )
 
     # Format and save the transcript into ASS
-    subtitle_path: Path = build_ass_subtitle(transcript_path, raw_transcript)
+    subtitle_path: Path = build_ass_subtitle(audio_path, transcript)
 
 
 if __name__ == "__main__":
